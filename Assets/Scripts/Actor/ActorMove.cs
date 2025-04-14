@@ -5,16 +5,16 @@ using Dreamteck.Splines;
 
 public class ActorMove : MonoBehaviour
 {
-    public SplineFollower follower;         // Компонент для слідування по сплайну
-    public GameObject actor;                // Основний актор, який буде рухатись по сплайну
-    public List<RoadPoint> roadPoints;      // Всі точки на шляху
-    public int pointsPerJump = 2;           // Скільки точок пропускається
-    public float jumpTime = 0.6f;           // Час для стрибка
-    public float jumpHeight = 1f;           // Висота стрибка
-    public float jumpDelay = 0.2f;          // Затримка між стрибками
-    public float followerSpeed = 0.1f;      // Швидкість руху сплайна
+    public SplineFollower follower;
+    public List<RoadPoint> roadPoints;
 
-    private int currentIndex = 0;
+    private int pointsPerJump = 1;
+    private float jumpTime = 0.6f;
+    private float jumpHeight = 1f;
+    private float jumpDelay = 0.2f;
+    private float followerSpeed = 0.1f;
+
+    private int currentIndex = 3;
     private bool isMoving = false;
 
     private List<double> percents = new();
@@ -26,20 +26,41 @@ public class ActorMove : MonoBehaviour
         percents.Clear();
         foreach (var point in roadPoints)
         {
-            // Визначення відсотка для кожної точки
             SplineSample sample = follower.spline.Project(point.transform.position);
             double percent = sample.percent;
             percents.Add(percent);
         }
+
+        SetFollowerStartPosition();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space) && !isMoving)
         {
-            int totalPointsToCross = 15;
+            int totalPointsToCross = 30;
+
+            CalculatePointsPerJump(totalPointsToCross);
             StartCoroutine(JumpMultiplePoints(totalPointsToCross));
         }
+    }
+
+    public void StartJumps(int jumpsAmount)
+    {
+        CalculatePointsPerJump(jumpsAmount);
+        StartCoroutine(JumpMultiplePoints(jumpsAmount));
+    }
+
+    private void CalculatePointsPerJump(int jumpsAmount)
+    {
+        if (jumpsAmount < 10)
+            pointsPerJump = 0;
+        else if (jumpsAmount < 15)
+            pointsPerJump = 1;
+        else if (jumpsAmount < 25)
+            pointsPerJump = 2;
+        else
+            pointsPerJump = 3;
     }
 
     IEnumerator JumpMultiplePoints(int totalPoints)
@@ -49,7 +70,6 @@ public class ActorMove : MonoBehaviour
 
         while (pointsCrossed < totalPoints)
         {
-            // Отримуємо індекс наступної точки
             int nextIndex = currentIndex + pointsPerJump + 1;
             if (nextIndex >= roadPoints.Count)
             {
@@ -61,14 +81,9 @@ public class ActorMove : MonoBehaviour
                 pointsCrossed += pointsPerJump + 1;
             }
 
-            // Перехід до сплайну для стрибка на певну точку
             yield return StartCoroutine(JumpToSplinePoint(percents[nextIndex]));
-
-            // Виклик для фінальної точки
             roadPoints[nextIndex].ActorTrigger();
-
             currentIndex = nextIndex;
-
             yield return new WaitForSeconds(jumpDelay);
         }
 
@@ -77,47 +92,45 @@ public class ActorMove : MonoBehaviour
 
     IEnumerator JumpToSplinePoint(double targetPercent)
     {
-        // Отримуємо початкову позицію
-        Vector3 startPos = actor.transform.position;
-        // Отримуємо позицію по сплайну для заданого відсотка
+        Vector3 startPos = transform.position;
         Vector3 targetPos = follower.spline.EvaluatePosition((float)targetPercent);
 
-        // Поворот актора до напрямку сплайна
-        Vector3 direction = (targetPos - actor.transform.position).normalized;
+        Vector3 direction = (targetPos - transform.position).normalized;
         if (direction != Vector3.zero)
         {
             Quaternion lookRot = Quaternion.LookRotation(direction);
-            actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, lookRot, 0.1f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, lookRot, 0.1f);
         }
 
-        // Створюємо плавне переміщення по X і Z
         float startPercent = (float)follower.GetPercent();
         float targetPercentFloat = (float)targetPercent;
-
-        // Визначаємо час для руху на сплайні
         float moveDuration = Mathf.Abs(targetPercentFloat - startPercent) / followerSpeed;
-
-        // Плавно рухаємося по X і Z одночасно з підйомом по Y
         float elapsedTime = 0f;
+
         while (elapsedTime < moveDuration)
         {
             elapsedTime += Time.deltaTime;
-
-            // Рух по сплайну по X та Z
             follower.SetPercent(Mathf.Lerp(startPercent, targetPercentFloat, elapsedTime / moveDuration));
-            actor.transform.position = follower.transform.position;
+            transform.position = follower.transform.position;
 
-            // Стрибок по осі Y (плавний підйом та спуск)
-            float yPosition = Mathf.Lerp(startPos.y, startPos.y + jumpHeight, Mathf.Sin(Mathf.PI * (elapsedTime / moveDuration)));
-            actor.transform.position = new Vector3(actor.transform.position.x, yPosition, actor.transform.position.z);
+            float yPosition = Mathf.Lerp(startPos.y, startPos.y + jumpHeight,
+                Mathf.Sin(Mathf.PI * (elapsedTime / moveDuration)));
+            transform.position = new Vector3(transform.position.x, yPosition, transform.position.z);
 
             yield return null;
         }
 
-        // Завершуємо рух по сплайну та стрибок
-        actor.transform.position = new Vector3(follower.transform.position.x, startPos.y, follower.transform.position.z);
-
-        // Після завершення руху по сплайну, оновлюємо відсоток сплайна
+        transform.position =
+            new Vector3(follower.transform.position.x, startPos.y, follower.transform.position.z);
         follower.SetPercent((float)targetPercent);
+    }
+
+    private void SetFollowerStartPosition()
+    {
+        if (currentIndex >= 0 && currentIndex < percents.Count)
+        {
+            double initialPercent = percents[currentIndex];
+            follower.SetPercent(initialPercent);
+        }
     }
 }
