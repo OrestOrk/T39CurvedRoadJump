@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4551119714166311396}
   - component: {fileID: 7096917489188869467}
+  - component: {fileID: 981249283895593407}
   m_Layer: 0
   m_Name: RoadPoint
   m_TagString: Untagged
@@ -45,6 +46,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a2d09385466a46fc8113030c516ea26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &981249283895593407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6501673266269356321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b86c8dff4f0644f1ba78365e011a73e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pointModel: {fileID: 7761419247739811697}
 --- !u!1 &7761419247739811697
 GameObject:
   m_ObjectHideFlags: 0

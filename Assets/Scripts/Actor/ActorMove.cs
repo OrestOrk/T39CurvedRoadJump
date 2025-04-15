@@ -6,13 +6,13 @@ using Dreamteck.Splines;
 public class ActorMove : MonoBehaviour
 {
     public SplineFollower follower;
-    public List<RoadPoint> roadPoints;
+    public List<RoadPointController> roadPoints;
 
     private int pointsPerJump = 1;
-    private float jumpTime = 0.6f;
+    private float jumpTime = 2f;
     private float jumpHeight = 1f;
-    private float jumpDelay = 0.2f;
-    private float followerSpeed = 0.1f;
+    private float jumpDelay = 0.5f;
+    private float followerSpeed = 0.05f;
 
     private int currentIndex = 3;
     private bool isMoving = false;
@@ -99,7 +99,7 @@ public class ActorMove : MonoBehaviour
         if (direction != Vector3.zero)
         {
             Quaternion lookRot = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Lerp(transform.rotation, lookRot, 0.1f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, lookRot, 10f);
         }
 
         float startPercent = (float)follower.GetPercent();
