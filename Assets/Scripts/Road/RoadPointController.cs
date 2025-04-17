@@ -13,6 +13,8 @@ public class RoadPointController : MonoBehaviour
     public void ActorTrigger()
     {
         _roadPointView.AnimateScale();
+        
+        _roadPointView.TryActivateItem();
     }
     
 }

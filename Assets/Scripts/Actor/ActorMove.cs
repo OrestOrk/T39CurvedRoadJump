@@ -10,17 +10,20 @@ public class ActorMove : MonoBehaviour
     
     public SplineFollower follower;
     public List<RoadPointController> roadPoints;
-
-    private int pointsPerJump = 1;
-    private float jumpTime = 2f;
-    private float jumpHeight = 2f;
-    private float jumpDelay = 0.5f;
-    private float followerSpeed = 0.03f;
-
-    private int currentIndex = 3;
-    private bool isMoving = false;
+    
+    private int _pointsPerJump = 1;
+    private float _jumpTime = 0.8f;
+    private float _jumpHeight = 2.5f;
+    private float _jumpDelay = 0.5f;
+    private float _followerSpeed = 0.03f;
+    
+    private int _currentIndex = 3;
+    private bool _isMoving = false;
+    private bool _isPaused = false;
 
     private List<double> percents = new();
+
+    private IEnumerator activeCoroutine;
 
     private void Start()
     {
@@ -39,41 +42,69 @@ public class ActorMove : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !isMoving)
+        if (Input.GetKeyDown(KeyCode.Space) && !_isMoving)
         {
             int totalPointsToCross = 30;
-
-            CalculatePointsPerJump(totalPointsToCross);
-            StartCoroutine(JumpMultiplePoints(totalPointsToCross));
+            
+            StartJumps(totalPointsToCross);
         }
     }
-
+    
     public void StartJumps(int jumpsAmount)
     {
+        if (_isMoving) return;
+
         CalculatePointsPerJump(jumpsAmount);
-        StartCoroutine(JumpMultiplePoints(jumpsAmount));
+        CalculateJumpHeight();
+        activeCoroutine = JumpMultiplePoints(jumpsAmount);
+        StartCoroutine(activeCoroutine);
+    }
+    
+    public void PauseJumps()
+    {
+        if (!_isMoving || _isPaused) return;
+
+        _isPaused = true;
+    }
+    
+    public void ResumeJumps()
+    {
+        if (!_isPaused) return;
+
+        _isPaused = false;
+        StartCoroutine(activeCoroutine); 
     }
 
     private void CalculatePointsPerJump(int jumpsAmount)
     {
         if (jumpsAmount < 10)
-            pointsPerJump = 0;
+            _pointsPerJump = 0;
         else if (jumpsAmount < 15)
-            pointsPerJump = 1;
+            _pointsPerJump = 1;
         else if (jumpsAmount < 25)
-            pointsPerJump = 2;
+            _pointsPerJump = 2;
         else
-            pointsPerJump = 3;
+            _pointsPerJump = 3;
+    }
+
+    private void CalculateJumpHeight()
+    {
+        _jumpHeight = 1 + (_pointsPerJump * 1);
     }
 
     IEnumerator JumpMultiplePoints(int totalPoints)
     {
-        isMoving = true;
+        _isMoving = true;
         int pointsCrossed = 0;
 
         while (pointsCrossed < totalPoints)
         {
-            int nextIndex = currentIndex + pointsPerJump + 1;
+            while (_isPaused)
+            {
+                yield return null;
+            }
+
+            int nextIndex = _currentIndex + _pointsPerJump + 1;
             if (nextIndex >= roadPoints.Count)
             {
                 nextIndex = roadPoints.Count - 1;
@@ -81,16 +112,16 @@ public class ActorMove : MonoBehaviour
             }
             else
             {
-                pointsCrossed += pointsPerJump + 1;
+                pointsCrossed += _pointsPerJump + 1;
             }
 
             yield return StartCoroutine(JumpToSplinePoint(percents[nextIndex]));
             roadPoints[nextIndex].ActorTrigger();
-            currentIndex = nextIndex;
-            yield return new WaitForSeconds(jumpDelay);
+            _currentIndex = nextIndex;
+            yield return new WaitForSeconds(_jumpDelay);
         }
 
-        isMoving = false;
+        _isMoving = false;
     }
 
     IEnumerator JumpToSplinePoint(double targetPercent)
@@ -118,38 +149,45 @@ public class ActorMove : MonoBehaviour
 
         if (direction != Vector3.zero)
         {
-            // Ігноруємо X та Z координати для дотримання повороту тільки по Y
-            direction.y = 0f; // Забезпечуємо, що напрямок не враховує нахил вгору чи вниз
+            direction.y = 0f;
 
-            // Створюємо обертання навколо осі Y
             Quaternion lookRot = Quaternion.LookRotation(direction.normalized);
             transform.rotation = Quaternion.Lerp(transform.rotation, lookRot, 10f * Time.deltaTime);
         }
     }
 
+    /*private float CalculateMoveDuration(float startPercent, float targetPercentFloat)
+    {
+        return Mathf.Abs(targetPercentFloat - startPercent) / _followerSpeed;
+    }*/
+    
     private float CalculateMoveDuration(float startPercent, float targetPercentFloat)
     {
-        return Mathf.Abs(targetPercentFloat - startPercent) / followerSpeed;
+        // Встановити тривалість руху однаковою для всіх стрибків
+        return _jumpTime; // Використовуємо фіксовану тривалість `_jumpTime`
     }
 
-    private IEnumerator MoveAlongSpline(Vector3 startPos, float targetPercentFloat, float moveDuration, float elapsedTime)
+    private IEnumerator MoveAlongSpline(Vector3 startPos, float targetPercentFloat, float moveDuration,
+        float elapsedTime)
     {
         float startPercent = (float)follower.GetPercent();
 
         while (elapsedTime < moveDuration)
         {
+            while (_isPaused)
+            {
+                yield return null;
+            }
+
             elapsedTime += Time.deltaTime;
 
-            // Пересування по сплайновому шляху
             follower.SetPercent(Mathf.Lerp(startPercent, targetPercentFloat, elapsedTime / moveDuration));
             transform.position = follower.transform.position;
 
-            // Розрахунок позиції Y
-            float yPosition = Mathf.Lerp(startPos.y, startPos.y + jumpHeight,
+            float yPosition = Mathf.Lerp(startPos.y, startPos.y + _jumpHeight,
                 Mathf.Sin(Mathf.PI * (elapsedTime / moveDuration)));
             transform.position = new Vector3(transform.position.x, yPosition, transform.position.z);
 
-            // Поворот тільки по осі Y
             Vector3 targetPos = follower.spline.EvaluatePosition(targetPercentFloat);
             AlignToDirection(targetPos);
 
@@ -159,16 +197,16 @@ public class ActorMove : MonoBehaviour
 
     private void FinalizePosition(float targetPercent)
     {
-        // Встановлення фінальної позиції на сплайні
-        transform.position = new Vector3(follower.transform.position.x, transform.position.y, follower.transform.position.z);
+        transform.position = new Vector3(follower.transform.position.x, transform.position.y,
+            follower.transform.position.z);
         follower.SetPercent(targetPercent);
     }
 
     private void SetFollowerStartPosition()
     {
-        if (currentIndex >= 0 && currentIndex < percents.Count)
+        if (_currentIndex >= 0 && _currentIndex < percents.Count)
         {
-            double initialPercent = percents[currentIndex];
+            double initialPercent = percents[_currentIndex];
             follower.SetPercent(initialPercent);
         }
     }

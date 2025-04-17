@@ -48,7 +48,7 @@ public class CameraController : MonoBehaviour
 
     private void SetDefaultCameraRotation()
     {
-        Quaternion defaultRotation = Quaternion.Euler(-50f, 0f, 0f); // Позиція з -50 градусами по осі X
+        Quaternion defaultRotation = Quaternion.Euler(50f, 0f, 0f);
         _cameraTransform.rotation = defaultRotation;
     }
     
