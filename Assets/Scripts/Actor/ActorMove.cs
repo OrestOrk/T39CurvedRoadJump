@@ -7,16 +7,17 @@ using System;
 public class ActorMove : MonoBehaviour
 {
     public event Action OnJumpStart;
-    
+    public event Action OnTouchdown;//one jump complette
+
     public SplineFollower follower;
     public List<RoadPointController> roadPoints;
-    
+
     private int _pointsPerJump = 1;
     private float _jumpTime = 0.8f;
     private float _jumpHeight = 2.5f;
     private float _jumpDelay = 0.5f;
     private float _followerSpeed = 0.03f;
-    
+
     private int _currentIndex = 3;
     private bool _isMoving = false;
     private bool _isPaused = false;
@@ -42,14 +43,12 @@ public class ActorMove : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !_isMoving)
+        if (Input.GetKeyDown(KeyCode.J))
         {
-            int totalPointsToCross = 30;
-            
-            StartJumps(totalPointsToCross);
+            BonusJump();
         }
     }
-    
+
     public void StartJumps(int jumpsAmount)
     {
         if (_isMoving) return;
@@ -59,20 +58,20 @@ public class ActorMove : MonoBehaviour
         activeCoroutine = JumpMultiplePoints(jumpsAmount);
         StartCoroutine(activeCoroutine);
     }
-    
+
     public void PauseJumps()
     {
         if (!_isMoving || _isPaused) return;
 
         _isPaused = true;
     }
-    
+
     public void ResumeJumps()
     {
         if (!_isPaused) return;
 
         _isPaused = false;
-        StartCoroutine(activeCoroutine); 
+        StartCoroutine(activeCoroutine);
     }
 
     private void CalculatePointsPerJump(int jumpsAmount)
@@ -118,6 +117,8 @@ public class ActorMove : MonoBehaviour
             yield return StartCoroutine(JumpToSplinePoint(percents[nextIndex]));
             roadPoints[nextIndex].ActorTrigger();
             _currentIndex = nextIndex;
+            
+            OnTouchdown.Invoke();
             yield return new WaitForSeconds(_jumpDelay);
         }
 
@@ -160,7 +161,7 @@ public class ActorMove : MonoBehaviour
     {
         return Mathf.Abs(targetPercentFloat - startPercent) / _followerSpeed;
     }*/
-    
+
     private float CalculateMoveDuration(float startPercent, float targetPercentFloat)
     {
         // Встановити тривалість руху однаковою для всіх стрибків
@@ -208,6 +209,41 @@ public class ActorMove : MonoBehaviour
         {
             double initialPercent = percents[_currentIndex];
             follower.SetPercent(initialPercent);
+        }
+    }
+
+    //bonus jump 
+    public void BonusJump()
+    {
+        //need make return previous jumps after end bonus jump
+        if (_isMoving)
+        {
+            PauseJumps();
+        }
+
+        int pointsToJump = 10;
+        int originalJumpStep = _pointsPerJump;
+        _pointsPerJump = 10;
+        float originalJumpTime = _jumpTime;
+        _jumpTime = 1f;
+
+        StartCoroutine(JumpTenPoints(pointsToJump, originalJumpTime, originalJumpStep));
+    }
+
+    private IEnumerator JumpTenPoints(int pointsToJump, float originalJumpTime, int originalJumpStep)
+    {
+        bool wasPaused = _isPaused;
+        _isPaused = false;
+
+        activeCoroutine = JumpMultiplePoints(pointsToJump);
+        yield return StartCoroutine(activeCoroutine);
+
+        _pointsPerJump = originalJumpStep;
+        _jumpTime = originalJumpTime;
+
+        if (wasPaused)
+        {
+            PauseJumps();
         }
     }
 }

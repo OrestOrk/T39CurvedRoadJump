@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ActorController : MonoBehaviour
-{
-    [SerializeField] private ActorMove _actorMove;
+{ 
+    private ActorMove _actorMove;
+    private ActorView _actorView;
     
     private WheelController _wheelController;
 
@@ -13,13 +14,28 @@ public class ActorController : MonoBehaviour
     {
         _wheelController = ServiceLocator.GetService<WheelController>();
         
+        _actorMove = GetComponent<ActorMove>();
+        _actorView = GetComponent<ActorView>();
+        
         _wheelController.OnWheelResult += StartJumps;
+
+        _actorMove.OnTouchdown += _actorView.TouchDownEffect;
     }
 
     #region ItemsCallbacks
     public void TrapTrigger()
     {
         _actorMove.PauseJumps();
+    }
+
+    public void BombTrigger()
+    {
+        _actorMove.PauseJumps();
+    }
+
+    public void BootJumpTrigger()
+    {
+        _actorMove.BonusJump();
     }
 
     public void ChestTrigger()
@@ -39,6 +55,7 @@ public class ActorController : MonoBehaviour
     private void OnDestroy()
     {
         _wheelController.OnWheelResult -= StartJumps;
+        _actorMove.OnTouchdown -= _actorView.TouchDownEffect;
     }
     
 }
