@@ -6,7 +6,7 @@ public class RoadPointController : MonoBehaviour
 {
      private RoadPointView _roadPointView;
 
-    private void Start()
+    private void Awake()
     {
         _roadPointView = GetComponent<RoadPointView>();
     }
@@ -16,5 +16,9 @@ public class RoadPointController : MonoBehaviour
         
         _roadPointView.TryActivateItem();
     }
-    
+
+    public void SetPointItem(BaseRoadItem item)
+    {
+        _roadPointView.SetItem(item);
+    }
 }

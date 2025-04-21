@@ -48,7 +48,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa48191fa427c4131926eb2ab78a9228, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bootView: {fileID: 0}
 --- !u!114 &3142803696229784111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,6 +111,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7102810397677672741, guid: 77a860f97af7137419b0e295bbb2549a, type: 3}
       propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7102810397677672742, guid: 77a860f97af7137419b0e295bbb2549a, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7102810397721224670, guid: 77a860f97af7137419b0e295bbb2549a, type: 3}
@@ -230,7 +233,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4990097420111396475, guid: 970df29d7f4e80d41921807f54b2ad20, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.733
+      value: 0.499
       objectReference: {fileID: 0}
     - target: {fileID: 4990097420111396475, guid: 970df29d7f4e80d41921807f54b2ad20, type: 3}
       propertyPath: m_LocalPosition.z
@@ -268,7 +271,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: soccer_boot
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6807553519070019713, guid: 970df29d7f4e80d41921807f54b2ad20, type: 3}
+    - {fileID: 4038349369840045901, guid: 970df29d7f4e80d41921807f54b2ad20, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ActorController : MonoBehaviour
-{ 
+{
+    public event Action OnJumpsSeriesComplette;
+    
     private ActorMove _actorMove;
     private ActorView _actorView;
     
@@ -20,6 +22,7 @@ public class ActorController : MonoBehaviour
         _wheelController.OnWheelResult += StartJumps;
 
         _actorMove.OnTouchdown += _actorView.TouchDownEffect;
+        _actorMove.OnJumpsSeriesEnd += SendJumpsComplette;
     }
 
     #region ItemsCallbacks
@@ -36,13 +39,14 @@ public class ActorController : MonoBehaviour
     public void BootJumpTrigger()
     {
         _actorMove.BonusJump();
+        _actorView.PlayBonusJumpEffect();
     }
 
     public void ChestTrigger()
     {
         _actorMove.PauseJumps();
         
-        DelayManager.DelayAction(_actorMove.ResumeJumps,2f);
+        DelayManager.DelayAction(_actorMove.ResumeJumps,3f);
     }
 
     #endregion
@@ -51,11 +55,17 @@ public class ActorController : MonoBehaviour
     {
         _actorMove.StartJumps(jumpsAmount);
     }
+
+    private void SendJumpsComplette()
+    {
+        OnJumpsSeriesComplette?.Invoke();
+    }
     
     private void OnDestroy()
     {
         _wheelController.OnWheelResult -= StartJumps;
         _actorMove.OnTouchdown -= _actorView.TouchDownEffect;
+        _actorMove.OnJumpsSeriesEnd -= SendJumpsComplette;
     }
     
 }

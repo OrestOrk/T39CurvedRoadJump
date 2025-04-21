@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class BootController : BaseRoadItem
 {
-    [SerializeField] private BootView _bootView;
+    private BootView _bootView;
 
     private void Start()
     {
+        base.Start();
         _bootView = GetComponent<BootView>();
     }
 

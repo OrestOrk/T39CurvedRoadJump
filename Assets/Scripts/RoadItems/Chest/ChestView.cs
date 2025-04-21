@@ -10,6 +10,7 @@ public class ChestView : MonoBehaviour
      [SerializeField] private ParticleSystem _particleTextVFX;
      
      [SerializeField] private ParticleSystem _openChestVFX;
+     [SerializeField] private ParticleSystem _coinsVFX;
      private Animator _chestAnimator;
 
      private float _animationHeight = 3f;
@@ -26,14 +27,17 @@ public class ChestView : MonoBehaviour
           transform.DOMoveY(_animationHeight, _animationDuration);
           
           _openChestVFX.Play();
+          PlayCoinsVFX();
      }
 
      public void DisplayCoins(int coins)
      {
-         // _particleText.SetText(coins.ToString());
          _particleText.UpdateText(coins.ToString());
-          Debug.Log("Coins" + coins);
           _particleTextVFX.Play();
-          
+     }
+
+     private void PlayCoinsVFX()
+     {
+          _coinsVFX.Play();
      }
 }

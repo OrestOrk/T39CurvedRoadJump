@@ -24,7 +24,7 @@ public class WheelView : MonoBehaviour
     {
         if (_wheelTransform == null) return;
         gameObject.SetActive(true);
-        _wheelTransform.anchoredPosition = _startPosition;
+        _wheelTransform.DOAnchorPosY(_startPosition.y, _animationDuration).SetEase(Ease.OutBounce);
     }
 
     public void HideWheel()

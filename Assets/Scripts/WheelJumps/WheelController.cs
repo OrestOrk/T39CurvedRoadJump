@@ -26,6 +26,13 @@ public class WheelController : MonoBehaviour
     private float spinSpeed;
     
     private WheelSector _winningSector;
+    private ActorController _actorController;
+
+    private void Start()
+    {
+        _actorController = ServiceLocator.GetService<ActorController>();
+        _actorController.OnJumpsSeriesComplette += _wheelView.ShowWheel;
+    }
 
     public void StartSpin()
     {
@@ -98,5 +105,10 @@ public class WheelController : MonoBehaviour
         int winningValue = _winningSector.sectorValue;
         
         OnWheelResult?.Invoke(winningValue);
+    }
+
+    private void OnDestroy()
+    {
+        _actorController.OnJumpsSeriesComplette -= _wheelView.ShowWheel;
     }
 }

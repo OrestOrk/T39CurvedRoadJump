@@ -5,9 +5,22 @@ using UnityEngine;
 public class ActorView : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _jumpEndVFX;
+    [SerializeField] private ParticleSystem _bigJumpVFX;
 
     public void TouchDownEffect()
     {
         _jumpEndVFX.Play();
+    }
+
+    public void PlayBonusJumpEffect()
+    {
+        _jumpEndVFX.Play();
+        
+        DelayManager.DelayAction(StopBonusJumpEffect,1f);
+    }
+
+    private void StopBonusJumpEffect()
+    {
+        _jumpEndVFX.Stop();
     }
 }

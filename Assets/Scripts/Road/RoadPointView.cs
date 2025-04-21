@@ -20,6 +20,11 @@ public class RoadPointView : MonoBehaviour
         SetupItemTransform();
     }
 
+    public void SetItem(BaseRoadItem roadItem)
+    {
+        _roadItem = roadItem;
+        SetupItemTransform();
+    }
     public void AnimateScale()
     {
         _pointModel.transform.DOScale(_animatedScale,_animationDuration).SetEase(Ease.OutBounce)
@@ -45,4 +50,5 @@ public class RoadPointView : MonoBehaviour
             _roadItem.transform.localScale = Vector3.one;
         }
     }
+    
 }

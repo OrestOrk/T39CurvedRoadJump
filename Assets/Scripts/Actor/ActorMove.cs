@@ -7,45 +7,64 @@ using System;
 public class ActorMove : MonoBehaviour
 {
     public event Action OnJumpStart;
-    public event Action OnTouchdown;//one jump complette
+    public event Action OnTouchdown;
+    public event Action OnJumpsSeriesEnd;
 
     public SplineFollower follower;
     public List<RoadPointController> roadPoints;
 
+    [Header("Jump Settings")]
+     private float _jumpTime = 0.5f;
+     private float _jumpDelay = 0.2f;
+
+    private float _jumpHeight = 2f;
+    private float _groundY;
     private int _pointsPerJump = 1;
-    private float _jumpTime = 0.8f;
-    private float _jumpHeight = 2.5f;
-    private float _jumpDelay = 0.5f;
-    private float _followerSpeed = 0.03f;
 
     private int _currentIndex = 3;
+    
     private bool _isMoving = false;
     private bool _isPaused = false;
+    private bool _bonusJumpRequested = false;
+
 
     private List<double> percents = new();
-
     private IEnumerator activeCoroutine;
+    
 
+    // ------------------- Initialization -------------------
     private void Start()
     {
         follower.follow = false;
+        CalculateSplinePercents();
+        SetInitialPosition();
+        _groundY = transform.position.y;
+    }
 
+    private void CalculateSplinePercents()
+    {
         percents.Clear();
         foreach (var point in roadPoints)
         {
-            SplineSample sample = follower.spline.Project(point.transform.position);
-            double percent = sample.percent;
+            double percent = follower.spline.Project(point.transform.position).percent;
             percents.Add(percent);
         }
-
-        SetFollowerStartPosition();
     }
 
+    private void SetInitialPosition()
+    {
+        if (_currentIndex >= 0 && _currentIndex < percents.Count)
+        {
+            follower.SetPercent(percents[_currentIndex]);
+        }
+    }
+
+    // ------------------- Public Controls -------------------
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.J))
         {
-            BonusJump();
+            BonusJump(); // debug placeholder
         }
     }
 
@@ -53,197 +72,155 @@ public class ActorMove : MonoBehaviour
     {
         if (_isMoving) return;
 
-        CalculatePointsPerJump(jumpsAmount);
-        CalculateJumpHeight();
+        DefineJumpSettings(jumpsAmount);
+
         activeCoroutine = JumpMultiplePoints(jumpsAmount);
         StartCoroutine(activeCoroutine);
     }
 
     public void PauseJumps()
     {
-        if (!_isMoving || _isPaused) return;
-
-        _isPaused = true;
+        if (_isMoving && !_isPaused)
+            _isPaused = true;
     }
 
     public void ResumeJumps()
     {
-        if (!_isPaused) return;
-
-        _isPaused = false;
-        StartCoroutine(activeCoroutine);
+        if (_isPaused)
+            _isPaused = false;
     }
 
-    private void CalculatePointsPerJump(int jumpsAmount)
+    // ------------------- Jump Settings Logic -------------------
+    private void DefineJumpSettings(int jumpAmount)
     {
-        if (jumpsAmount < 10)
-            _pointsPerJump = 0;
-        else if (jumpsAmount < 15)
-            _pointsPerJump = 1;
-        else if (jumpsAmount < 25)
-            _pointsPerJump = 2;
-        else
-            _pointsPerJump = 3;
+        _pointsPerJump = jumpAmount switch
+        {
+            < 10 => 0,
+            < 15 => 1,
+            < 25 => 2,
+            _ => 3
+        };
+
+        _jumpHeight = 1f + (_pointsPerJump * 1f);
     }
 
-    private void CalculateJumpHeight()
-    {
-        _jumpHeight = 1 + (_pointsPerJump * 1);
-    }
-
-    IEnumerator JumpMultiplePoints(int totalPoints)
+    // ------------------- Jump Execution -------------------
+    private IEnumerator JumpMultiplePoints(int totalPoints)
     {
         _isMoving = true;
         int pointsCrossed = 0;
 
         while (pointsCrossed < totalPoints)
         {
-            while (_isPaused)
+            yield return WaitWhilePaused();
+
+            int jumpLength = _pointsPerJump + 1;
+
+            if (_bonusJumpRequested)
             {
-                yield return null;
+                jumpLength = 10;
+                _bonusJumpRequested = false;
             }
 
-            int nextIndex = _currentIndex + _pointsPerJump + 1;
+            int nextIndex = _currentIndex + jumpLength;
+
             if (nextIndex >= roadPoints.Count)
             {
                 nextIndex = roadPoints.Count - 1;
-                pointsCrossed = totalPoints;
+                pointsCrossed = totalPoints; // завершити цикл
             }
             else
             {
-                pointsCrossed += _pointsPerJump + 1;
+                pointsCrossed++; // рахувати як один стрибок
             }
 
             yield return StartCoroutine(JumpToSplinePoint(percents[nextIndex]));
             roadPoints[nextIndex].ActorTrigger();
+
             _currentIndex = nextIndex;
-            
-            OnTouchdown.Invoke();
+            OnTouchdown?.Invoke();
+
             yield return new WaitForSeconds(_jumpDelay);
         }
 
         _isMoving = false;
+
+        OnJumpsSeriesEnd?.Invoke();
     }
 
-    IEnumerator JumpToSplinePoint(double targetPercent)
+
+    private IEnumerator JumpToSplinePoint(double targetPercent)
     {
         Vector3 startPos = transform.position;
         Vector3 targetPos = follower.spline.EvaluatePosition((float)targetPercent);
 
         AlignToDirection(targetPos);
 
-        float startPercent = (float)follower.GetPercent();
-        float targetPercentFloat = (float)targetPercent;
-        float moveDuration = CalculateMoveDuration(startPercent, targetPercentFloat);
+        float moveDuration = _jumpTime;
         float elapsedTime = 0f;
 
         OnJumpStart?.Invoke();
 
-        yield return MoveAlongSpline(startPos, targetPercentFloat, moveDuration, elapsedTime);
+        yield return MoveAlongSpline(startPos, (float)targetPercent, moveDuration, elapsedTime);
 
         FinalizePosition((float)targetPercent);
     }
 
-    private void AlignToDirection(Vector3 targetPos)
-    {
-        Vector3 direction = (targetPos - transform.position).normalized;
-
-        if (direction != Vector3.zero)
-        {
-            direction.y = 0f;
-
-            Quaternion lookRot = Quaternion.LookRotation(direction.normalized);
-            transform.rotation = Quaternion.Lerp(transform.rotation, lookRot, 10f * Time.deltaTime);
-        }
-    }
-
-    /*private float CalculateMoveDuration(float startPercent, float targetPercentFloat)
-    {
-        return Mathf.Abs(targetPercentFloat - startPercent) / _followerSpeed;
-    }*/
-
-    private float CalculateMoveDuration(float startPercent, float targetPercentFloat)
-    {
-        // Встановити тривалість руху однаковою для всіх стрибків
-        return _jumpTime; // Використовуємо фіксовану тривалість `_jumpTime`
-    }
-
-    private IEnumerator MoveAlongSpline(Vector3 startPos, float targetPercentFloat, float moveDuration,
-        float elapsedTime)
+    private IEnumerator MoveAlongSpline(Vector3 startPos, float targetPercent, float duration, float elapsed)
     {
         float startPercent = (float)follower.GetPercent();
 
-        while (elapsedTime < moveDuration)
+        while (elapsed < duration)
         {
-            while (_isPaused)
-            {
-                yield return null;
-            }
+            yield return WaitWhilePaused();
 
-            elapsedTime += Time.deltaTime;
+            elapsed += Time.deltaTime;
 
-            follower.SetPercent(Mathf.Lerp(startPercent, targetPercentFloat, elapsedTime / moveDuration));
-            transform.position = follower.transform.position;
+            float t = elapsed / duration;
+            float currentPercent = Mathf.Lerp(startPercent, targetPercent, t);
+            follower.SetPercent(currentPercent);
 
-            float yPosition = Mathf.Lerp(startPos.y, startPos.y + _jumpHeight,
-                Mathf.Sin(Mathf.PI * (elapsedTime / moveDuration)));
-            transform.position = new Vector3(transform.position.x, yPosition, transform.position.z);
+            Vector3 currentPosition = follower.transform.position;
+            float y = _groundY + Mathf.Sin(Mathf.PI * t) * _jumpHeight;
+            transform.position = new Vector3(currentPosition.x, y, currentPosition.z);
 
-            Vector3 targetPos = follower.spline.EvaluatePosition(targetPercentFloat);
-            AlignToDirection(targetPos);
+            AlignToDirection(follower.spline.EvaluatePosition(targetPercent));
 
+            yield return null;
+        }
+    }
+
+    private IEnumerator WaitWhilePaused()
+    {
+        while (_isPaused)
+        {
             yield return null;
         }
     }
 
     private void FinalizePosition(float targetPercent)
     {
-        transform.position = new Vector3(follower.transform.position.x, transform.position.y,
-            follower.transform.position.z);
+        Vector3 finalPos = follower.transform.position;
+        transform.position = new Vector3(finalPos.x, transform.position.y, finalPos.z);
         follower.SetPercent(targetPercent);
     }
 
-    private void SetFollowerStartPosition()
+    private void AlignToDirection(Vector3 targetPos)
     {
-        if (_currentIndex >= 0 && _currentIndex < percents.Count)
+        Vector3 direction = (targetPos - transform.position).normalized;
+        if (direction != Vector3.zero)
         {
-            double initialPercent = percents[_currentIndex];
-            follower.SetPercent(initialPercent);
+            direction.y = 0f;
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Lerp(transform.rotation, lookRotation, 10f * Time.deltaTime);
         }
     }
 
-    //bonus jump 
+    // ------------------- Debug/Extra -------------------
     public void BonusJump()
     {
-        //need make return previous jumps after end bonus jump
-        if (_isMoving)
-        {
-            PauseJumps();
-        }
-
-        int pointsToJump = 10;
-        int originalJumpStep = _pointsPerJump;
-        _pointsPerJump = 10;
-        float originalJumpTime = _jumpTime;
-        _jumpTime = 1f;
-
-        StartCoroutine(JumpTenPoints(pointsToJump, originalJumpTime, originalJumpStep));
+        _bonusJumpRequested = true;
     }
 
-    private IEnumerator JumpTenPoints(int pointsToJump, float originalJumpTime, int originalJumpStep)
-    {
-        bool wasPaused = _isPaused;
-        _isPaused = false;
 
-        activeCoroutine = JumpMultiplePoints(pointsToJump);
-        yield return StartCoroutine(activeCoroutine);
-
-        _pointsPerJump = originalJumpStep;
-        _jumpTime = originalJumpTime;
-
-        if (wasPaused)
-        {
-            PauseJumps();
-        }
-    }
 }
