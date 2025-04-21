@@ -5,17 +5,20 @@ using UnityEngine;
 public class CoinsSmallController : BaseRoadItem
 {
     private CoinsSmallView _coinsSmallView;
-
+    
+    private CoinsBalanceController _coinsBalanceController;
+    private const int COINS_REWARD = 100;
     private void Start()
     {
         base.Start();
-        _coinsSmallView = GetComponent<CoinsSmallView>();
         
+        _coinsSmallView = GetComponent<CoinsSmallView>();
+        _coinsBalanceController = ServiceLocator.GetService<CoinsBalanceController>();
     }
     
     public override void Activate()
     {
-        //add 100 coins to coinsytem
+        _coinsBalanceController.AddCoins(COINS_REWARD);
         _coinsSmallView.ActivateEffect();
     }
 }

@@ -5169,6 +5169,10 @@ PrefabInstance:
       propertyPath: fadeOutReference
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7102810397721224669, guid: 77a860f97af7137419b0e295bbb2549a, type: 3}
+      propertyPath: cameraShake.useMainCamera
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7102810397721224670, guid: 77a860f97af7137419b0e295bbb2549a, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -9988,6 +9992,14 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 467605754681784777, guid: 25477c0d7d0187d4e8cb92a3bc1860ba, type: 3}
       propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1166160449237680039, guid: 25477c0d7d0187d4e8cb92a3bc1860ba, type: 3}
+      propertyPath: clearBehavior
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1166160449237680039, guid: 25477c0d7d0187d4e8cb92a3bc1860ba, type: 3}
+      propertyPath: cameraShake.enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5538092320186716035, guid: 25477c0d7d0187d4e8cb92a3bc1860ba, type: 3}

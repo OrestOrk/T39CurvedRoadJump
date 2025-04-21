@@ -8,6 +8,8 @@ public class BombController : BaseRoadItem
 
     private void Start()
     {
+        base.Start();
+        
         _bombView = GetComponent<BombView>();
     }
     

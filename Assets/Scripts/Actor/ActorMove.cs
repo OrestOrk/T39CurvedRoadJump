@@ -14,10 +14,10 @@ public class ActorMove : MonoBehaviour
     public List<RoadPointController> roadPoints;
 
     [Header("Jump Settings")]
-     private float _jumpTime = 0.5f;
-     private float _jumpDelay = 0.2f;
+    private float _jumpTime = 0.2f; 
+    private float _jumpDelay = 0.1f;
 
-    private float _jumpHeight = 2f;
+    private float _jumpHeight = 1.5f;
     private float _groundY;
     private int _pointsPerJump = 1;
 
@@ -131,7 +131,7 @@ public class ActorMove : MonoBehaviour
             }
             else
             {
-                pointsCrossed++; // рахувати як один стрибок
+                pointsCrossed += jumpLength;
             }
 
             yield return StartCoroutine(JumpToSplinePoint(percents[nextIndex]));
@@ -179,10 +179,11 @@ public class ActorMove : MonoBehaviour
             float t = elapsed / duration;
             float currentPercent = Mathf.Lerp(startPercent, targetPercent, t);
             follower.SetPercent(currentPercent);
-
-            Vector3 currentPosition = follower.transform.position;
+            
+            Vector3 splinePosition = follower.spline.EvaluatePosition(currentPercent);
             float y = _groundY + Mathf.Sin(Mathf.PI * t) * _jumpHeight;
-            transform.position = new Vector3(currentPosition.x, y, currentPosition.z);
+            transform.position = new Vector3(splinePosition.x, y, splinePosition.z);
+
 
             AlignToDirection(follower.spline.EvaluatePosition(targetPercent));
 

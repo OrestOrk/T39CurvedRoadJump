@@ -11,8 +11,8 @@ public class ItemSpawner : MonoBehaviour
     [SerializeField]private List<RoadPointController> roadPoints;
 
     [Header("Налаштування спавну")]
-    private int minSpacing = 5;
-    private int maxSpacing = 30;
+    private int minSpacing = 4;
+    private int maxSpacing = 20;
 
     private void Start()
     {

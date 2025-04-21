@@ -5,10 +5,14 @@ using UnityEngine;
 public class ChestController : BaseRoadItem
 {
     private ChestView _chestView;
+    private CoinsBalanceController _coinsBalanceController;
     private void Start()
     {
         base.Start();
+        
         _chestView = GetComponent<ChestView>();
+        
+        _coinsBalanceController = ServiceLocator.GetService<CoinsBalanceController>();
     }
 
     private void Update()
@@ -34,6 +38,7 @@ public class ChestController : BaseRoadItem
     {
         int coins = GetRandomCoins();
         
+        _coinsBalanceController.AddCoins(coins);
         _chestView.DisplayCoins(coins);
     }
     
