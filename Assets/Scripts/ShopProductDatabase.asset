@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c44a9cf925aee43b4bae51c220f025f9, type: 3}
+  m_Name: ShopProductDatabase
+  m_EditorClassIdentifier: 
+  products:
+  - productName: Tiger King
+    productPrice: 0
+    productID: 1
+    isPurchased: 1
+  - productName: Rabbit Dash
+    productPrice: 50000
+    productID: 2
+    isPurchased: 0
+  - productName: Pig Rush
+    productPrice: 50000
+    productID: 3
+    isPurchased: 0
+  - productName: Donkey Kick
+    productPrice: 100000
+    productID: 4
+    isPurchased: 0
+  - productName: Lion Heart
+    productPrice: 100000
+    productID: 5
+    isPurchased: 0

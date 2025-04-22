@@ -14,11 +14,13 @@ public class CoinsBalanceController : MonoBehaviour
         _coinsBalanceView = GetComponent<CoinsBalanceView>();
         
         LoadCoins();
+        _coinsBalanceView.DisplayCoins(_coins);
     }
     
     private void LoadCoins()
     {
-        _coins = PlayerPrefs.GetInt(CoinsKey, 0);
+        _coins = PlayerPrefs.GetInt(CoinsKey, 200000);
+        Debug.Log($"Loaded {_coins}");
     }
 
     private void SaveCoins()
