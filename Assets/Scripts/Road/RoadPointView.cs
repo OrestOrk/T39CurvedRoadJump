@@ -29,7 +29,6 @@ public class RoadPointView : MonoBehaviour
     {
         _pointModel.transform.DOScale(_animatedScale,_animationDuration).SetEase(Ease.OutBounce)
             .OnComplete(() => _pointModel.transform.localScale = _startScale);
-        Debug.Log("PointAnimate");
     }
 
     public void TryActivateItem()

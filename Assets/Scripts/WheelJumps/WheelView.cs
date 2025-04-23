@@ -18,6 +18,8 @@ public class WheelView : MonoBehaviour
         {
             _startPosition = _wheelTransform.anchoredPosition;
         }
+        
+        HideWheel();
     }
 
     public void ShowWheel()

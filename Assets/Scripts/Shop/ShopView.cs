@@ -11,12 +11,12 @@ public class ShopView : MonoBehaviour
     [SerializeField] private Button _selectButton;
     [SerializeField] private GameObject _selectionIndecator;
 
-    public float scrollStep = 5f;
+    private float _scrollStep = 5f;
     
     public void ScrollTo(int index)
     {
         
-        float targetZ = index * scrollStep;
+        float targetZ = index * _scrollStep;
         _productContainer.DOLocalMoveZ(targetZ, 0.5f).SetEase(Ease.OutCubic);
     }
 

@@ -9,6 +9,8 @@ public class GameInitializer : MonoBehaviour
    [SerializeField] private CoinsBalanceController _coinsBalanceController;
    [SerializeField] private TransitionScreenController _transitionScreenController;
    [SerializeField] private CharacterSelectionController _characterSelectionController;
+   [SerializeField] private GameController _gameController;
+   [SerializeField] private FailScreenController _failScreenController;
    
    [Space(10)]
    [Header("ScriptableObject")]
@@ -22,6 +24,8 @@ public class GameInitializer : MonoBehaviour
       ServiceLocator.RegisterService(_coinsBalanceController);
       ServiceLocator.RegisterService(_transitionScreenController);
       ServiceLocator.RegisterService(_characterSelectionController);
+      ServiceLocator.RegisterService(_gameController);
+      ServiceLocator.RegisterService(_failScreenController);
       
       ServiceLocator.RegisterService(_shopProductDatabase);
       

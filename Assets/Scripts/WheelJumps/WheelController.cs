@@ -27,11 +27,15 @@ public class WheelController : MonoBehaviour
     
     private WheelSector _winningSector;
     private ActorController _actorController;
+    private GameController _gameController;
 
     private void Start()
     {
         _actorController = ServiceLocator.GetService<ActorController>();
+        _gameController = ServiceLocator.GetService<GameController>();
+        
         _actorController.OnJumpsSeriesComplette += _wheelView.ShowWheel;
+        _gameController.OnStartPlaying += _wheelView.ShowWheel;
     }
 
     public void StartSpin()
@@ -110,5 +114,6 @@ public class WheelController : MonoBehaviour
     private void OnDestroy()
     {
         _actorController.OnJumpsSeriesComplette -= _wheelView.ShowWheel;
+        _gameController.OnStartPlaying -= _wheelView.ShowWheel;
     }
 }

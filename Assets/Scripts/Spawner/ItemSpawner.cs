@@ -9,14 +9,20 @@ public class ItemSpawner : MonoBehaviour
 
     [Header("Точки дороги")]
     [SerializeField]private List<RoadPointController> roadPoints;
+    
+    [SerializeField] private List<GameObject> spawnedItems = new List<GameObject>();
 
     [Header("Налаштування спавну")]
     private int minSpacing = 4;
     private int maxSpacing = 20;
 
+    private GameController _gameController;
     private void Start()
     {
         StartCoroutine(SpawnItemsOnRoad());
+        
+        _gameController = ServiceLocator.GetService<GameController>();
+        _gameController.OnResetGame += HandleReset;
     }
 
     private IEnumerator SpawnItemsOnRoad()
@@ -33,8 +39,25 @@ public class ItemSpawner : MonoBehaviour
             BaseRoadItem prefab = availableItems[Random.Range(0, availableItems.Count)];
             BaseRoadItem instance = Instantiate(prefab);
             roadPoints[index].SetPointItem(instance);
+            
+            spawnedItems.Add(instance.gameObject);
 
             yield return null; // 1 frame delay
         }
+    }
+
+    private void HandleReset()
+    {
+        foreach (var item in spawnedItems)
+        {
+            Destroy(item);
+        }
+        
+        StartCoroutine(SpawnItemsOnRoad());//spawn new items
+    }
+
+    private void OnDestroy()
+    {
+        _gameController.OnResetGame -= HandleReset;
     }
 }

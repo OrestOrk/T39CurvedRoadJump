@@ -6,7 +6,6 @@ using UnityEngine;
 public class TransitionScreenController : MonoBehaviour
 {
     private TransitionScreenView _transitionScreenView;
-
     private void Start()
     {
         _transitionScreenView = GetComponent<TransitionScreenView>();

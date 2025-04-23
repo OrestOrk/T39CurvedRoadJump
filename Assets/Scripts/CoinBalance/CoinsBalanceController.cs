@@ -19,8 +19,7 @@ public class CoinsBalanceController : MonoBehaviour
     
     private void LoadCoins()
     {
-        _coins = PlayerPrefs.GetInt(CoinsKey, 200000);
-        Debug.Log($"Loaded {_coins}");
+        _coins = PlayerPrefs.GetInt(CoinsKey,0);
     }
 
     private void SaveCoins()
