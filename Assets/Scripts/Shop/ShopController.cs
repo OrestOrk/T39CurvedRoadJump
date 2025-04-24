@@ -15,17 +15,15 @@ public class ShopController : MonoBehaviour
         _productDatabase = ServiceLocator.GetService<ShopProductDatabase>();
         _coinsBalanceController = ServiceLocator.GetService<CoinsBalanceController>();
         _characterSelectionController = ServiceLocator.GetService<CharacterSelectionController>();
-
-        // Завантажити збережені дані при старті гри
+        
         LoadPurchasedProducts();
-
-        // Показати поточний товар
+        
         ShowCurrentProduct();
         
         ControllSelectionIndecator();
     }
-
-    // Завантаження збережених даних про покупки
+     
+    //load data
     private void LoadPurchasedProducts()
     {
         var savedProducts = SaveSystem.LoadData(); // Завантажуємо збережені дані з файлу
@@ -74,6 +72,8 @@ public class ShopController : MonoBehaviour
                 currentProduct.Open(); // Купуємо товар
                 SavePurchasedProduct(currentProduct); // Зберігаємо статус покупки
                 ShowCurrentProduct(); // Оновлюємо інформацію на екрані
+                
+                _shopView.PlayPurchaseEffect();
             }
         }
     }
@@ -98,10 +98,9 @@ public class ShopController : MonoBehaviour
         }
     }
     
-    // Збереження даних про покупку в файл
     private void SavePurchasedProduct(ShopProductData product)
     {
-        var savedProducts = SaveSystem.LoadData(); // Завантажуємо всі збереження
+        var savedProducts = SaveSystem.LoadData(); 
         var existingProduct = savedProducts.Find(p => p.productID == product.productID);
 
         if (existingProduct != null)
@@ -110,9 +109,9 @@ public class ShopController : MonoBehaviour
         }
         else
         {
-            savedProducts.Add(product); // Додаємо новий товар до списку
+            savedProducts.Add(product); 
         }
 
-        SaveSystem.SaveData(savedProducts); // Зберігаємо зміни
+        SaveSystem.SaveData(savedProducts); 
     }
 }
