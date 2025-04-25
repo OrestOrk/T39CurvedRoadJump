@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.Serialization;
 
 public class CoinsBalanceView : MonoBehaviour
 {
     [SerializeField] private Text _coinText;
     [SerializeField] private Text _coinShopText;
+    [SerializeField] private Text _coinDailyBonusText; // новий текст
 
     private int _currentCoins;
 
@@ -13,33 +15,61 @@ public class CoinsBalanceView : MonoBehaviour
     private Tweener _punchTween;
     private Tweener _countShopTween;
     private Tweener _punchShopTween;
+    private Tweener _countPopupTween;
+    private Tweener _punchPopupTween;
 
     public void DisplayCoins(int coins)
     {
-        // Якщо є активні анімації, скидаємо їх
-        if (_countTween != null && _countTween.IsActive()) 
-            _countTween.Kill();
-        if (_punchTween != null && _punchTween.IsActive()) 
-            _punchTween.Kill();
-        if (_countShopTween != null && _countShopTween.IsActive()) 
-            _countShopTween.Kill();
-        if (_punchShopTween != null && _punchShopTween.IsActive()) 
-            _punchShopTween.Kill();
+        // Скидаємо всі активні твіни
+        _countTween?.Kill();
+        _punchTween?.Kill();
+        _countShopTween?.Kill();
+        _punchShopTween?.Kill();
+        _countPopupTween?.Kill();
+        _punchPopupTween?.Kill();
 
-        // Анімація для _coinText
-        _countTween = DOTween.To(() => _currentCoins, x => {
-            _currentCoins = x;
-            _coinText.text = _currentCoins.ToString();
-        }, coins, 0.5f).SetEase(Ease.OutQuad);
+        _currentCoins = coins;
 
-        _punchTween = _coinText.rectTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 5, 0.5f);
+        // Оновлення _coinText
+        if (_coinText.gameObject.activeInHierarchy)
+        {
+            _countTween = DOTween.To(() => int.Parse(_coinText.text), x => {
+                _coinText.text = x.ToString();
+            }, coins, 0.5f).SetEase(Ease.OutQuad);
 
-        // Анімація для _coinShopText
-        _countShopTween = DOTween.To(() => _currentCoins, x => {
-            _currentCoins = x;
-            _coinShopText.text = _currentCoins.ToString();
-        }, coins, 0.5f).SetEase(Ease.OutQuad);
+            _punchTween = _coinText.rectTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 5, 0.5f);
+        }
+        else
+        {
+            _coinText.text = coins.ToString();
+        }
 
-        _punchShopTween = _coinShopText.rectTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 5, 0.5f);
+        // Оновлення _coinShopText
+        if (_coinShopText.gameObject.activeInHierarchy)
+        {
+            _countShopTween = DOTween.To(() => int.Parse(_coinShopText.text), x => {
+                _coinShopText.text = x.ToString();
+            }, coins, 0.5f).SetEase(Ease.OutQuad);
+
+            _punchShopTween = _coinShopText.rectTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 5, 0.5f);
+        }
+        else
+        {
+            _coinShopText.text = coins.ToString();
+        }
+
+        // Оновлення _coinPopupText
+        if (_coinDailyBonusText.gameObject.activeInHierarchy)
+        {
+            _countPopupTween = DOTween.To(() => int.Parse(_coinDailyBonusText.text), x => {
+                _coinDailyBonusText.text = x.ToString();
+            }, coins, 0.5f).SetEase(Ease.OutQuad);
+
+            _punchPopupTween = _coinDailyBonusText.rectTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 5, 0.5f);
+        }
+        else
+        {
+            _coinDailyBonusText.text = coins.ToString();
+        }
     }
 }

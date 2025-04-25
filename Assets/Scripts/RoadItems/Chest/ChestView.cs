@@ -11,6 +11,7 @@ public class ChestView : MonoBehaviour
      
      [SerializeField] private ParticleSystem _openChestVFX;
      [SerializeField] private ParticleSystem _coinsVFX;
+     
      private Animator _chestAnimator;
 
      private float _animationHeight = 3f;
@@ -29,12 +30,24 @@ public class ChestView : MonoBehaviour
           _openChestVFX.Play();
           PlayCoinsVFX();
      }
-
+   
      public void DisplayCoins(int coins)
      {
          _particleText.UpdateText(coins.ToString());
           _particleTextVFX.Play();
      }
+
+     public void OpentDailyBonus() // for daily bonus screen
+     {
+          _chestAnimator.SetTrigger("Open");
+          _openChestVFX.Play();
+          PlayCoinsVFX();
+
+          // Плавне обертання об'єкта на 180 градусів по осі Y за 0.5 секунди
+          transform.DORotate(new Vector3(0, -180, 0), 0.5f, RotateMode.LocalAxisAdd)
+               .SetEase(Ease.OutBack);
+     }
+
 
      private void PlayCoinsVFX()
      {

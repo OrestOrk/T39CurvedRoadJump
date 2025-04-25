@@ -15,14 +15,6 @@ public class ChestController : BaseRoadItem
         _coinsBalanceController = ServiceLocator.GetService<CoinsBalanceController>();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Activate();
-        }
-    }
-
     public override void Activate()
     {
         _actorController.ChestTrigger();

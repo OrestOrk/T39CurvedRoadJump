@@ -36,6 +36,20 @@ public class ScreenController : MonoBehaviour
        DelayManager.DelayAction(_screenView.CloseShopScreen,1f);
     }
 
+    public void OpenDailyBonusScreen()
+    {
+        _transitionScreenController.ShowTransitionScreen();
+        
+        DelayManager.DelayAction(_screenView.OpenDailyBonusScreen,1f);
+    }
+
+    public void CloseDailyBonusScreen()
+    {
+        _transitionScreenController.ShowTransitionScreen();
+        
+        DelayManager.DelayAction(_screenView.CloseDailyBonusScreen,1f);
+    }
+
     private void ShowFailScreen()
     {
         _failScreenController.ShowFailsScreen();

@@ -24,12 +24,9 @@ public class SettingsView : BaseMiniScreens
 
     [Header("MusicSpites")]
     [SerializeField] private Sprite[] _musicSprites;
-    
+
     [Header("SoundSpites")]
     [SerializeField] private Sprite[] _soundSprites;
-    
-    
-    private float _animationDuration = 0.5f;
     
 
     public void ControllMusicIcon(bool state)

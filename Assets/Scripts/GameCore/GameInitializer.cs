@@ -11,6 +11,7 @@ public class GameInitializer : MonoBehaviour
    [SerializeField] private CharacterSelectionController _characterSelectionController;
    [SerializeField] private GameController _gameController;
    [SerializeField] private FailScreenController _failScreenController;
+   [SerializeField] private ScreenController _screenController;
    
    [Space(10)]
    [Header("ScriptableObject")]
@@ -26,8 +27,10 @@ public class GameInitializer : MonoBehaviour
       ServiceLocator.RegisterService(_characterSelectionController);
       ServiceLocator.RegisterService(_gameController);
       ServiceLocator.RegisterService(_failScreenController);
+      ServiceLocator.RegisterService(_screenController);
       
       ServiceLocator.RegisterService(_shopProductDatabase);
+      
       
       DelayManager.Initialize(this);
    }
