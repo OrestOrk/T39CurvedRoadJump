@@ -11,12 +11,15 @@ public class GameController : MonoBehaviour
     public event Action OnResetGame;
     
     private ActorController _actorController;
+    private WheelController _wheelController;
 
     private void Start()
     {
         _actorController = ServiceLocator.GetService<ActorController>();
+        _wheelController = ServiceLocator.GetService<WheelController>();
         
         _actorController.OnActorDeath += SendGameOver;
+        _wheelController.OnGameOverSector += SendGameOver;
     }
 
     public void StartPlaying()
@@ -39,5 +42,6 @@ public class GameController : MonoBehaviour
     private void OnDestroy()
     {
         _actorController.OnActorDeath -= SendGameOver;
+        _wheelController.OnGameOverSector -= SendGameOver;
     }
 }

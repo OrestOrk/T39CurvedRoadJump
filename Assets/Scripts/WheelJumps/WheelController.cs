@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class WheelController : MonoBehaviour
 {
+    public event Action OnGameOverSector;
     public event Action<int> OnWheelResult;
     
     public event Action OnStartSpin;
@@ -105,6 +106,12 @@ public class WheelController : MonoBehaviour
     private void SendWheelResult()
     {
         _wheelView.HideWheel();
+
+        if (_winningSector.isGameOver == true)
+        {
+            OnGameOverSector?.Invoke();
+            return;
+        }
         
         int winningValue = _winningSector.sectorValue;
         

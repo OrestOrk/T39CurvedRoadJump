@@ -16,6 +16,7 @@ public class ActorController : MonoBehaviour
     private GameController _gameController;
     
     private Vector3 _startPosition;
+    private Quaternion _startRotation;
     
     private void Start()
     {
@@ -26,25 +27,27 @@ public class ActorController : MonoBehaviour
         _actorView = GetComponent<ActorView>();
         
         _wheelController.OnWheelResult += StartJumps;
+        _wheelController.OnGameOverSector += FailActor;
         _gameController.OnResetGame += ResetActor;
 
         _actorMove.OnTouchdown += _actorView.TouchDownEffect;
         _actorMove.OnJumpsSeriesEnd += SendJumpsComplette;
         
         _startPosition = transform.position;
+        _startRotation = transform.rotation;
     }
 
     #region ItemsCallbacks
     public void TrapTrigger()
     {
-        _actorMove.PauseJumps();
+        _actorMove.StopJumps();
         
         FailActor();
     }
 
     public void BombTrigger()
     {
-        _actorMove.PauseJumps();
+        _actorMove.StopJumps();
         
         FailActor();
     }
@@ -82,7 +85,10 @@ public class ActorController : MonoBehaviour
 
     private void ResetActor()//reset transform
     {
+        _actorMove.ResetMoveData();
+        
         transform.position = _startPosition;
+        transform.rotation = _startRotation;
         
         OnResetActor?.Invoke();
     }
@@ -90,6 +96,7 @@ public class ActorController : MonoBehaviour
     private void OnDestroy()
     {
         _wheelController.OnWheelResult -= StartJumps;
+        _wheelController.OnGameOverSector -= FailActor;
         _gameController.OnResetGame -= ResetActor;
         
         _actorMove.OnTouchdown -= _actorView.TouchDownEffect;

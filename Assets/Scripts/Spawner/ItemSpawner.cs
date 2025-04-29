@@ -10,11 +10,11 @@ public class ItemSpawner : MonoBehaviour
     [Header("Точки дороги")]
     [SerializeField]private List<RoadPointController> roadPoints;
     
-    [SerializeField] private List<GameObject> spawnedItems = new List<GameObject>();
+    private List<GameObject> spawnedItems = new List<GameObject>();
 
     [Header("Налаштування спавну")]
     private int minSpacing = 4;
-    private int maxSpacing = 20;
+    private int maxSpacing = 15;
 
     private GameController _gameController;
     private void Start()
