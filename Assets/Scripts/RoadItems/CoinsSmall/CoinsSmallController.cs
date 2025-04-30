@@ -20,5 +20,7 @@ public class CoinsSmallController : BaseRoadItem
     {
         _coinsBalanceController.AddCoins(COINS_REWARD);
         _coinsSmallView.ActivateEffect();
+        
+        AudioController.instance.PlayBonusClip();
     }
 }

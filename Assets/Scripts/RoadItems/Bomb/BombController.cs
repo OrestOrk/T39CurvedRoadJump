@@ -18,5 +18,7 @@ public class BombController : BaseRoadItem
         _actorController.BombTrigger();
         
         _bombView.ActivationEffect();
+        
+        AudioController.instance.PlayExplosionBomb();
     }
 }

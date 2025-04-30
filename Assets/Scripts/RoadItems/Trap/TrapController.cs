@@ -12,18 +12,12 @@ public class TrapController : BaseRoadItem
         
         _trapView = GetComponent<TrapView>();
     }
-    /*private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-           Activate();
-        }
-    }*/
     
     public override void Activate()
     {
         _trapView.TrapAnimation();
 
         _actorController.TrapTrigger();
+        AudioController.instance.PlayTrap();
     }
 }

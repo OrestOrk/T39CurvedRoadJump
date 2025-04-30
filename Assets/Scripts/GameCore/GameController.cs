@@ -37,6 +37,8 @@ public class GameController : MonoBehaviour
         OnGameOver?.Invoke();
         
         DelayManager.DelayAction(HandleResetGame,3f);
+
+        AudioController.instance.PlayGameOver();
     }
 
     private void OnDestroy()

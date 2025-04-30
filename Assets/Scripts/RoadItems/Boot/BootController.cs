@@ -18,5 +18,7 @@ public class BootController : BaseRoadItem
         _bootView.ActivationEffect();
         
         _actorController.BootJumpTrigger();
+        
+        AudioController.instance.PlayBonusJump();
     }
 }

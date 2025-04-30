@@ -17,7 +17,11 @@ public class AudioView : MonoBehaviour
     [SerializeField] private AudioClip _purchaseClip;
     [SerializeField] private AudioClip _selectClip;
     [SerializeField] private AudioClip _jumpEndClip;
+    [SerializeField] private AudioClip _bonusClip;
+    [SerializeField] private AudioClip _spinWheelClip;
+    [SerializeField] private AudioClip _spinWheelEndClip;
 
+    [SerializeField] private AudioClip _shopScrollClip;
     // Публічні властивості для доступу до приватних полів
     public AudioSource MusicAudioSource => _musicAudioSource;
     public AudioSource SoundAudioSource => _soundAudioSource;
@@ -32,4 +36,8 @@ public class AudioView : MonoBehaviour
     public AudioClip PurchaseClip => _purchaseClip;
     public AudioClip SelectClip => _selectClip;
     public AudioClip JumpEndClip => _jumpEndClip;
+    public AudioClip BonusClip => _bonusClip;
+    public AudioClip SpinWheelClip => _spinWheelClip;
+    public AudioClip SpinWheelEndClip => _spinWheelEndClip;
+    public AudioClip ShopScrollClip => _shopScrollClip;
 }

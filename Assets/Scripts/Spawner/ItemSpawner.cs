@@ -13,8 +13,8 @@ public class ItemSpawner : MonoBehaviour
     private List<GameObject> spawnedItems = new List<GameObject>();
 
     [Header("Налаштування спавну")]
-    private int minSpacing = 4;
-    private int maxSpacing = 15;
+    private int minSpacing = 3;
+    private int maxSpacing = 10;
 
     private GameController _gameController;
     private void Start()

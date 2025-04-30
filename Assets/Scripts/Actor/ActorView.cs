@@ -7,6 +7,7 @@ public class ActorView : MonoBehaviour
     [SerializeField] private ParticleSystem _jumpEndVFX;
     [SerializeField] private ParticleSystem _bigJumpVFX;
     [SerializeField] private ParticleSystem _deathVFX;
+    [SerializeField] private ParticleSystem _brokenHeartVFX;
 
     public void TouchDownEffect()
     {
@@ -25,6 +26,10 @@ public class ActorView : MonoBehaviour
         _deathVFX.Play();
     }
 
+    public void PlayBrokenHeartEffect()
+    {
+        _brokenHeartVFX.Play();
+    }
     private void StopBonusJumpEffect()
     {
         _jumpEndVFX.Stop();

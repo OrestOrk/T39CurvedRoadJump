@@ -21,7 +21,7 @@ public class ChestController : BaseRoadItem
         
         _chestView.OpenChest();
         
-        //addcoins
+        AudioController.instance.PlayChestOpen();
         
         DelayManager.DelayAction(AddCoins,2f);
     }

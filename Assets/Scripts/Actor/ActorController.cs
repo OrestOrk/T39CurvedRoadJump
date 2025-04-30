@@ -52,6 +52,12 @@ public class ActorController : MonoBehaviour
         FailActor();
     }
 
+    public void SpikeTrapTrigger()
+    {
+        _actorMove.StopJumps();
+        
+        FailActor();
+    }
     public void BootJumpTrigger()
     {
         _actorMove.BonusJump();
@@ -81,6 +87,7 @@ public class ActorController : MonoBehaviour
     {
         OnActorDeath?.Invoke();
         _actorView.PlayDeathEffect();
+        _actorView.PlayBrokenHeartEffect();
     }
 
     private void ResetActor()//reset transform

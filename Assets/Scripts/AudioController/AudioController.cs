@@ -5,9 +5,17 @@ using UnityEngine;
 
 public class AudioController : MonoBehaviour
 {
+    public static AudioController instance;
     private AudioView _audioView;
     private SettingsController _settingsController;
 
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+        }
+    }    
     private void Start()
     {
         _audioView = GetComponent<AudioView>();
@@ -40,7 +48,7 @@ public class AudioController : MonoBehaviour
         PlaySound(_audioView.ButtonClick);
     }
 
-    public void PlayLose()
+    public void PlayGameOver()
     {
         PlaySound(_audioView.Lose);
     }
@@ -85,6 +93,26 @@ public class AudioController : MonoBehaviour
         PlaySound(_audioView.JumpEndClip);
     }
 
+    public void PlayBonusClip()
+    {
+        PlaySound(_audioView.BonusClip);
+    }
+
+    public void PlaySpinWheelClip()
+    {
+        PlaySound(_audioView.SpinWheelClip);
+    }
+
+    public void PlaySpinEndCLip()
+    {
+        PlaySound(_audioView.SpinWheelEndClip);
+    }
+
+    public void PlayShowScrollClip()
+    {
+        PlaySound(_audioView.ShopScrollClip);
+    }
+    
     // Приватний допоміжний метод для відтворення звуків
     private void PlaySound(AudioClip clip)
     {

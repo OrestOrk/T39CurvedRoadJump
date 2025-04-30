@@ -14,7 +14,7 @@ public class WheelController : MonoBehaviour
     [SerializeField] private WheelView _wheelView;
 
     [SerializeField] private Transform wheelTransform;  
-    [SerializeField] private List<WheelSector> sectors;
+    [SerializeField] private List<WheelSectorController> sectors;
     [SerializeField] private Transform arrowTransform;
 
      private float minSpinSpeed = 2f;
@@ -26,7 +26,7 @@ public class WheelController : MonoBehaviour
     private Coroutine spinCoroutine;
     private float spinSpeed;
     
-    private WheelSector _winningSector;
+    private WheelSectorController _winningSectorController;
     private ActorController _actorController;
     private GameController _gameController;
 
@@ -50,6 +50,7 @@ public class WheelController : MonoBehaviour
     private IEnumerator SpinWheel()
     {
         //OnStartSpin?.Invoke();
+        AudioController.instance.PlaySpinWheelClip();
         
         _wheelView.DeactivateSpinButton();
         
@@ -78,15 +79,18 @@ public class WheelController : MonoBehaviour
 
         spinCoroutine = null;
         //OnEndSpin?.Invoke();
-        _winningSector = DetermineWinningSector();
+        _winningSectorController = DetermineWinningSector();
+        _winningSectorController.WinSector();
+        
+        AudioController.instance.PlaySpinEndCLip();
         
         DelayManager.DelayAction(SendWheelResult, 3f);
     }
 
-    private WheelSector DetermineWinningSector()
+    private WheelSectorController DetermineWinningSector()
     {
         float closestDistance = float.MaxValue;
-        WheelSector winningSector = null;
+        WheelSectorController winningSectorController = null;
 
         foreach (var sector in sectors)
         {
@@ -96,24 +100,24 @@ public class WheelController : MonoBehaviour
             if (distance < closestDistance)
             {
                 closestDistance = distance;
-                winningSector = sector;
+                winningSectorController = sector;
             }
         }
 
-        return winningSector;
+        return winningSectorController;
     }
 
     private void SendWheelResult()
     {
         _wheelView.HideWheel();
 
-        if (_winningSector.isGameOver == true)
+        if (_winningSectorController.isGameOver == true)
         {
             OnGameOverSector?.Invoke();
             return;
         }
         
-        int winningValue = _winningSector.sectorValue;
+        int winningValue = _winningSectorController.sectorValue;
         
         OnWheelResult?.Invoke(winningValue);
     }

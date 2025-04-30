@@ -166,6 +166,8 @@ public class ActorMove : MonoBehaviour
         float elapsedTime = 0f;
 
         OnJumpStart?.Invoke();
+        
+        AudioController.instance.PlayJumpStart();
 
         yield return MoveAlongSpline(startPos, (float)targetPercent, moveDuration, elapsedTime);
 
@@ -195,6 +197,7 @@ public class ActorMove : MonoBehaviour
 
             yield return null;
         }
+        AudioController.instance.PlayJumpEndClip();
     }
 
     private IEnumerator WaitWhilePaused()

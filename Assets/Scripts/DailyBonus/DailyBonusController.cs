@@ -71,6 +71,8 @@ public class DailyBonusController : MonoBehaviour
 
         // Тут можна додати нагороду гравцеві
         _bonusView.OpenChest(COINS_REWARD);
+        
+        AudioController.instance.PlayChestOpen();
     }
 
     public void ClaimCoins()

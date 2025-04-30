@@ -12,6 +12,7 @@ public class GameInitializer : MonoBehaviour
    [SerializeField] private GameController _gameController;
    [SerializeField] private FailScreenController _failScreenController;
    [SerializeField] private ScreenController _screenController;
+   [SerializeField] private SettingsController _settingsController;
    
    [Space(10)]
    [Header("ScriptableObject")]
@@ -28,6 +29,7 @@ public class GameInitializer : MonoBehaviour
       ServiceLocator.RegisterService(_gameController);
       ServiceLocator.RegisterService(_failScreenController);
       ServiceLocator.RegisterService(_screenController);
+      ServiceLocator.RegisterService(_settingsController);
       
       ServiceLocator.RegisterService(_shopProductDatabase);
       

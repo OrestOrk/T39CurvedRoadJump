@@ -44,6 +44,8 @@ public class ShopController : MonoBehaviour
         _shopView.ScrollTo(_currentIndex);
         ShowCurrentProduct();
         ControllSelectionIndecator();
+        
+        AudioController.instance.PlayShowScrollClip();
     }
 
     public void PreviousProduct()
@@ -53,6 +55,8 @@ public class ShopController : MonoBehaviour
         _shopView.ScrollTo(_currentIndex);
         ShowCurrentProduct();
         ControllSelectionIndecator();
+        
+        AudioController.instance.PlayShowScrollClip();
     }
 
     private void ShowCurrentProduct()
@@ -74,6 +78,8 @@ public class ShopController : MonoBehaviour
                 ShowCurrentProduct(); // Оновлюємо інформацію на екрані
                 
                 _shopView.PlayPurchaseEffect();
+                
+                AudioController.instance.PlayPurchaseClip();//audio purchase
             }
         }
     }
@@ -84,6 +90,8 @@ public class ShopController : MonoBehaviour
         _characterSelectionController.PlayerSelected(ID);
         
         ControllSelectionIndecator();
+        
+        AudioController.instance.PlaySelectClip();
     }
 
     private void ControllSelectionIndecator()
