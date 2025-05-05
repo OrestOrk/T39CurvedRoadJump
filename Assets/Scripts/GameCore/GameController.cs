@@ -9,12 +9,15 @@ public class GameController : MonoBehaviour
     public event Action OnGameOver;
     
     public event Action OnResetGame;
+    public event Action OnExitToMenu;
     
     private ActorController _actorController;
     private WheelController _wheelController;
 
     private void Start()
     {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        
         _actorController = ServiceLocator.GetService<ActorController>();
         _wheelController = ServiceLocator.GetService<WheelController>();
         
@@ -25,6 +28,13 @@ public class GameController : MonoBehaviour
     public void StartPlaying()
     {
         OnStartPlaying?.Invoke();
+    }
+
+    public void ExitToMenu()//go to menu from play scene
+    {
+        OnExitToMenu?.Invoke();
+        
+        DelayManager.DelayAction(HandleResetGame,1f);
     }
 
     private void HandleResetGame()
@@ -40,7 +50,7 @@ public class GameController : MonoBehaviour
 
         AudioController.instance.PlayGameOver();
     }
-
+    
     private void OnDestroy()
     {
         _actorController.OnActorDeath -= SendGameOver;
